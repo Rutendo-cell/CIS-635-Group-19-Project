@@ -1,0 +1,95 @@
+---
+title: "Project"
+author: "Marwah Talbeh"
+date: "2022-11-15"
+output: pdf_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+data <- read.csv("readmission.csv", header = TRUE, sep = ",")
+dim(data)
+```
+
+```{r}
+colnames(data)
+```
+```{r}
+new_data <- subset(data, select = -c(6))
+```
+
+```{r}
+colnames(new_data)
+```
+## we are trying to remove all the null values in our data
+```{r}
+new_data$Number.of.Discharges<-replace(new_data$Number.of.Discharges,new_data$Number.of.Discharges=="N/A","NA")
+
+new_data$Predicted.Readmission.Rate<-replace(new_data$Predicted.Readmission.Rate,new_data$Predicted.Readmission.Rate=="N/A","NA")
+
+new_data$Expected.Readmission.Rate<-replace(new_data$Expected.Readmission.Rate,new_data$Expected.Readmission.Rate=="N/A","NA")
+
+new_data$Number.of.Readmissions<-replace(new_data$Number.of.Readmissions,new_data$Number.of.Readmissions=="N/A","NA")
+
+```
+
+```{r}
+data1 <- subset(new_data, Number.of.Discharges != "NA")
+data2 <- subset(data1, Predicted.Readmission.Rate != "NA")
+data3 <- subset(data2, Expected.Readmission.Rate != "NA")
+data4 <- subset(data3, Number.of.Readmissions != "NA")
+data5 <-  subset(data4, Number.of.Readmissions != "Too Few to Report")
+dim(data5)
+data5
+```
+ 
+## Now we will change the medical condition names into a numerical value, so that it would be easier to use when performing our analysis.
+```{r}
+data5$Measure.Name<-replace(data5$Measure.Name,data5$Measure.Name=="READM-30-HIP-KNEE-HRRP","128")
+
+
+data5$Measure.Name<-replace(data5$Measure.Name,data5$Measure.Name=="READM-30-CABG-HRRP","111")
+
+data5$Measure.Name<-replace(data5$Measure.Name,data5$Measure.Name=="READM-30-AMI-HRRP","167")
+
+data5$Measure.Name<-replace(data5$Measure.Name,data5$Measure.Name=="READM-30-HF-HRRP","342")
+
+data5$Measure.Name<-replace(data5$Measure.Name,data5$Measure.Name=="READM-30-COPD-HRRP","228")
+
+data5$Measure.Name<-replace(data5$Measure.Name,data5$Measure.Name=="READM-30-PN-HRRP","059")
+
+data5
+
+```
+
+## group the conditions by state
+
+```{r}
+grouped_data <- data4%>% group_by(Measure.Name)
+grouped_data
+
+```
+## statistical analysis
+
+```{r}
+data5$Measure.Name <- factor(data5$Measure.Name,levels= c(1,2,3,4,5,6),labels = c("HIP", "CABG", "AMI", "HF", "COPD","PN" ))
+
+#is.factor(data6$Measure.Name)
+data5
+boxplot( Number.of.Readmissions~ Measure.Name, data= data5,
+        main=" Boxplot of condition vs number of readmission",
+        xlab= "condition", ylab="number of readmission", col=rainbow(6),ylim=c(0,300))
+```
+
+
+
+
+
+
+
+
+
+
