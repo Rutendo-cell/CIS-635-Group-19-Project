@@ -1,6 +1,6 @@
 ---
 title: "Project"
-author: "Marwah Talbeh"
+author: "Rutendo Goto"
 date: "2022-11-15"
 output: pdf_document
 ---
